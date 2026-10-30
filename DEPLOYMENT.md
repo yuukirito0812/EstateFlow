@@ -1,30 +1,37 @@
 # Deployment status
 
-Prepared on 30 October 2026.
+Updated on 30 October 2026.
+
+**Live app:** https://estateflow-rose.vercel.app/ · **Portfolio demo:** https://estateflow-rose.vercel.app/demo
 
 | Service | Role | Status |
 | --- | --- | --- |
 | Existing Sites | Original private EstateFlow application | Available at https://estateflow-carl.saltyberry128.chatgpt.site/ |
-| GitHub | Standalone source and change history | Complete source packaged for the owner's manual repository upload |
-| Vercel | Next.js hosting | Import the uploaded GitHub repository, configure environment values, and verify the production build |
+| GitHub | Standalone source and change history | Complete source uploaded at https://github.com/yuukirito0812/EstateFlow |
+| Vercel | Next.js hosting | Production deployment ready; GitHub linked, Node.js 22, Supabase production environment configured |
 | Supabase | Account sign-in and persistent records | Project created, schema applied, database tests passed |
 
 ## Exact provider identifiers
 
 - GitHub account: `yuukirito0812`
-- Suggested repository name: `estateflow` (create a new repository; do not overwrite PESOBASE or Personal-Portfolio).
+- Repository: `yuukirito0812/EstateFlow`, production branch `main`.
 - Vercel team: `team_hkEK6ju9lWrvGQVOjSGnDGh0`, slug `cz-95a8`.
+- Vercel project: `prj_j0DnA2ZuaL0hu1dW1KjvsGFfroDZ`, name `estateflow`.
 - Supabase organization: `vixsbcmkwodfpdcuebof`.
 - Supabase project: `fcwrcxywakrwkixvewoq`, name `EstateFlow`, region `ap-southeast-1`.
 - Applied migration: `20261030083954_estateflow_workspace_and_ai_quota.sql`.
 
 ## Remaining release work
 
-1. Create a GitHub repository named `estateflow` and follow `START_HERE.md` to upload the extracted source.
-2. Upload this exact source. Exclude `.env.local`, `node_modules`, generated builds and all credentials.
-3. Import the GitHub repository into Vercel using the Next.js preset and Node.js 22.x, with `package.json` at the repository root.
-4. Configure the two public Supabase environment variables in Vercel, then run and inspect the production build.
-5. Set the exact deployed origin/redirect URLs in Supabase Auth and test sign-up → email confirmation → sign-in → save → reload → sign-out.
-6. Verify `/demo` separately, then connect Gemini using a session key if desired.
+1. In Supabase → Authentication → URL Configuration, set the Site URL to `https://estateflow-rose.vercel.app` and add these redirect URLs:
+
+   - `https://estateflow-rose.vercel.app/auth/callback`
+   - `https://estateflow-rose.vercel.app/auth/confirm`
+
+   This dashboard setting remains pending because the browser requires owner sign-in. The production database and public environment values are already configured.
+2. Test sign-up → email confirmation → sign-in → save → reload → sign-out. The anonymous workspace API correctly requires sign-in; a complete signed-in browser flow has not been tested.
+3. Connect Gemini using a session key in the saved workspace if desired. No live AI key was supplied during setup.
+
+The deployed `/demo`, property illustrations, and rules-based matching were verified. GitHub Actions tests/build and the Vercel production build passed.
 
 No Netlify project, paid plan, domain purchase, extra database, email-sending service, or automatic message delivery is necessary for this stack.

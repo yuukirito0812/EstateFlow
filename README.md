@@ -1,5 +1,7 @@
 # EstateFlow
 
+**Live app:** [estateflow-rose.vercel.app](https://estateflow-rose.vercel.app/) · **[Portfolio demo](https://estateflow-rose.vercel.app/demo)**
+
 **Uploading this project yourself? Start with [START_HERE.md](START_HERE.md).** It explains which files to upload and how to configure Vercel and Supabase.
 
 A real estate lead and follow-up workspace by Carl Vincent Zabala. This standalone edition uses **Next.js + Supabase** and is prepared for **Vercel** hosting. It preserves the original app's lead tracker, draggable pipeline, tasks/calendar, property matching, reports, CSV import/export, backups and reviewed email drafts.
@@ -12,7 +14,7 @@ A real estate lead and follow-up workspace by Carl Vincent Zabala. This standalo
 - `/demo` uses fictional records in browser memory. It resets on reload and cannot connect live AI. `/` requires sign-in and saves to Supabase.
 - Gmail compose links support reviewed, manually sent messages. Inbox sync and unattended daily email delivery are not connected.
 
-This archive is prepared for manual GitHub upload. The standalone edition is not yet deployed on Vercel; verify a successful production build before sharing it as a live application.
+The standalone edition is deployed on Vercel and linked to this repository's `main` branch. GitHub Actions and the Vercel production build passed. Email confirmation return URLs still need the final Supabase dashboard configuration listed in `DEPLOYMENT.md`.
 
 ## Local setup
 
@@ -32,14 +34,14 @@ npm test
 npm run build
 ```
 
-This workspace cannot currently access the npm registry, so full dependency installation and the production build have not been verified here. Use the Vercel build as a required release check. Generate and commit the package lock after the first successful `npm install`.
+Dependency installation, tests, and the production build were verified in GitHub Actions; the production build also passed on Vercel. Generate and commit the package lock after the first successful local `npm install`.
 
 ## Vercel setup
 
 1. Import the EstateFlow GitHub repository into Vercel, or deploy this source with the connected Vercel app.
 2. Use the **Next.js** preset and Node.js **22.x**; the repository root is the app root.
 3. Set `NEXT_PUBLIC_SUPABASE_URL` to `https://fcwrcxywakrwkixvewoq.supabase.co`.
-4. Set `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to this project's enabled publishable key from the Supabase dashboard. Add both variables for Production and Preview.
+4. Set `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to this project's enabled publishable key from the Supabase dashboard. The existing deployment has both variables configured for Production. Use a separate backend for previews that must stay isolated from production data.
 5. Deploy and verify the build succeeds before sharing the URL.
 6. In Supabase → Authentication → URL Configuration, set **Site URL** to the deployed production origin. Add `<production-origin>/auth/callback` and `<production-origin>/auth/confirm` as redirect URLs. Add `http://localhost:4173/auth/callback` only if local auth testing is needed. Avoid broad preview-domain wildcards.
 7. Create an account, confirm its email, sign in, add a lead, reload and verify the lead persists. Check a second account cannot see it. Email confirmation and an actual signed-in browser flow remain to be verified.
@@ -68,6 +70,7 @@ AI context excludes names, emails, phone numbers and free-text notes. The server
 - All 19 initial TypeScript/TSX files passed syntax transpilation.
 - Live Supabase transaction checks passed: first save, update, stale-revision rejection, invalid first revision rejection, account isolation, cross-account insert blocked, private quota access blocked, and the ninth AI request rejected. Fixtures were rolled back; no QA records remain.
 - Local domain checks cover fictional seed independence, template privacy, closed-lead follow-up behavior and invalid workspace rejection.
-- Full production build, live email confirmation, browser-authenticated persistence and live Gemini generation remain release checks.
+- Dependency installation, local tests, and the production build passed in GitHub Actions and on Vercel. The deployed login page, fictional demo, property illustrations/matching, and anonymous workspace access protection were verified.
+- Live email confirmation, browser-authenticated persistence, and live Gemini generation remain release checks. The Supabase dashboard requires owner sign-in to update the email confirmation return URLs.
 
 See `DEPLOYMENT.md` for exact provider IDs and current upload status.
