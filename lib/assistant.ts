@@ -7,7 +7,7 @@ export const proposalSchema=z.discriminatedUnion('type',[
 ]);
 export const emailSchema=z.object({leadId:z.string().max(80),subject:z.string().min(1).max(200),body:z.string().min(1).max(10000)});
 export const assistantOutputSchema=z.object({reply:z.string().min(1).max(8000),proposal:proposalSchema.nullish().transform(value=>value||undefined),draft:emailSchema.nullish().transform(value=>value||undefined)});
-export const assistantMessageSchema=z.object({id:z.string().max(80),role:z.enum(['user','assistant']),text:z.string().max(8000),provider:z.string().max(80).optional(),draft:emailSchema.optional(),proposal:proposalSchema.optional(),actioned:z.boolean().optional(),draftSaved:z.boolean().optional(),proposalApplied:z.boolean().optional(),error:z.boolean().optional(),retry:z.string().max(4000).optional()});
+export const assistantMessageSchema=z.object({id:z.string().max(80),role:z.enum(['user','assistant']),text:z.string().max(8000),provider:z.string().max(80).optional(),draft:emailSchema.optional(),proposal:proposalSchema.optional(),actioned:z.boolean().optional(),draftSaved:z.boolean().optional(),proposalApplied:z.boolean().optional(),error:z.boolean().optional(),retry:z.string().max(4000).optional(),choices:z.array(z.object({label:z.string().max(80),prompt:z.string().max(4000)})).max(8).optional()});
 export type AssistantMessage=z.infer<typeof assistantMessageSchema>;
 export type AssistantProposal=z.infer<typeof proposalSchema>;
 
@@ -39,7 +39,7 @@ export function buildAssistantContext(state:Workspace,message:string,leadId?:str
 
 export function validateAssistantOutput(value:unknown,state:Workspace){
   const parsed=assistantOutputSchema.parse(value);
-  for(const field of ['draft','proposal'] as const){if(parsed[field]&&!state.leads.some(l=>l.id===parsed[field]!.leadId))throw new Error('The response referred to an unknown lead. Please name the lead and retry.');}
+  for(const field of ['draft','proposal'] as const){if(parsed[field]&&!(field==='draft'&&!parsed[field]!.leadId)&&!state.leads.some(l=>l.id===parsed[field]!.leadId))throw new Error('The response referred to an unknown lead. Please name the lead and retry.');}
   return parsed;
 }
 

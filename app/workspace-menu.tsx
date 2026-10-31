@@ -1,0 +1,18 @@
+'use client';
+import { useEffect,useRef,useState } from 'react';
+import { ArrowUpRight, Building2, Check, ChevronDown, Download, LayoutDashboard, Pencil, Plus, RefreshCw, Settings2, Upload, X } from 'lucide-react';
+import type { Workspace } from '@/lib/domain';
+export default function WorkspaceMenu({data,demo,busy,onRename,onAction}:{data:Workspace;demo:boolean;busy:boolean;onRename:(name:string)=>Promise<boolean>;onAction:(action:'overview'|'lead'|'import'|'backup'|'refresh'|'settings')=>void}){
+  const [open,setOpen]=useState(false),[renaming,setRenaming]=useState(false),[name,setName]=useState(data.settings.workspaceName),[error,setError]=useState('');
+  const root=useRef<HTMLDivElement>(null);
+  useEffect(()=>{setName(data.settings.workspaceName);},[data.settings.workspaceName]);
+  useEffect(()=>{if(!open)return;function outside(e:PointerEvent){if(!root.current?.contains(e.target as Node)){setOpen(false);setRenaming(false);}}function escape(e:KeyboardEvent){if(e.key==='Escape'){setOpen(false);setRenaming(false);}}document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape);};},[open]);
+  function action(value:Parameters<typeof onAction>[0]){setOpen(false);setRenaming(false);onAction(value);}
+  return <div className="workspace-menu-wrap" ref={root}>
+    <button className={'workspace-switch '+(open?'expanded':'')} onClick={()=>setOpen(v=>!v)} aria-expanded={open} aria-controls="workspace-actions" aria-label="Open workspace menu"><span className="workspace-square"><Building2 size={16}/></span><span><strong>{data.settings.workspaceName||'Workspace'}</strong><small>{demo?'Demo · Local session':'Real estate CRM'}</small></span><ChevronDown size={14}/></button>
+    {open&&<section className="workspace-menu" id="workspace-actions" aria-label="Workspace actions"><div className="workspace-menu-title"><span><strong>{data.settings.workspaceName}</strong><small>{data.leads.length} leads · {data.properties.length} listings</small></span><button className="icon-button" aria-label="Rename workspace" onClick={()=>{setName(data.settings.workspaceName);setRenaming(v=>!v);setError('');}}><Pencil size={14}/></button></div>
+      {renaming&&<form className="workspace-rename" onSubmit={async e=>{e.preventDefault();if(!name.trim()){setError('Enter a workspace name.');return;}if(await onRename(name.trim())){setRenaming(false);setError('');}}}><label htmlFor="workspace-name">Workspace name</label><div><input id="workspace-name" value={name} onChange={e=>setName(e.target.value)} maxLength={80} autoFocus/><button className="icon-button" aria-label="Save workspace name" disabled={busy}><Check size={15}/></button><button type="button" className="icon-button" aria-label="Cancel rename" onClick={()=>setRenaming(false)}><X size={14}/></button></div>{error&&<p role="alert">{error}</p>}</form>}
+      <button onClick={()=>action('overview')}><LayoutDashboard size={15}/>Workspace overview</button><button onClick={()=>action('lead')}><Plus size={15}/>Add lead</button><button onClick={()=>action('import')}><Upload size={15}/>Import leads</button><button onClick={()=>action('backup')}><Download size={15}/>Export backup</button><div className="workspace-menu-divider"/><button disabled={busy} onClick={()=>action('refresh')}><RefreshCw size={15}/>Refresh records</button><button onClick={()=>action('settings')}><Settings2 size={15}/>Workspace settings</button><a href={demo?'/':'/demo'}><ArrowUpRight size={15}/>{demo?'Open saved workspace':'Explore demo'}</a>
+    </section>}
+  </div>;
+}
