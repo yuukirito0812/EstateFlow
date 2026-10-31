@@ -14,7 +14,7 @@ export type AssistantProposal=z.infer<typeof proposalSchema>;
 export function redactContacts(text:string){
   return text.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[email removed]')
     .replace(/(?:\+?\d[\d ()-]{7,}\d)/g,value=>/^\d{4}-\d{2}-\d{2}$/.test(value)?value:'[phone removed]')
-    .replace(/(?:AIza[\w-]{25,}|sk-[\w-]{20,})/g,'[key removed]');
+    .replace(/(?:AIza[\w-]{25,}|sk-[\w-]{20,}|gsk_[\w-]{20,})/g,'[key removed]');
 }
 
 export function buildAssistantContext(state:Workspace,message:string,leadId?:string){

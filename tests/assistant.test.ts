@@ -61,3 +61,8 @@ test('Groq uses its own key header and returns standard assistant JSON',async()=
   const result=await generateProvider({key:'test-only-key',provider:'groq',model:'openai/gpt-oss-20b',system:'Return JSON',turns:[{role:'user',text:'Create an email'}],signal:new AbortController().signal},fetcher);
   assert.equal(JSON.parse(result.text).reply,'Email ready');
 });
+
+test('quota information survives unavailable legacy-model fallbacks',async()=>{
+  const fetcher:typeof fetch=async(input)=>String(input).includes('?pageSize')?response({models:['gemini-3.5-flash-lite','gemini-2.5-flash-lite'].map(m=>({name:'models/'+m,supportedGenerationMethods:['generateContent']}))}):String(input).includes('3.5')?response({error:{message:'Quota exhausted'}},429):response({error:{message:'Model not found'}},404);
+  await assert.rejects(()=>connectProvider('test-only-key','gemini',new AbortController().signal,fetcher),(e:unknown)=>e instanceof AIProviderError&&e.code==='quota');
+});

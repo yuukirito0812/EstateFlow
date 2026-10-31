@@ -47,11 +47,12 @@ async function requestModel(key:string,provider:AIProvider,model:string,system:s
 export async function connectProvider(key:string,provider:AIProvider,signal:AbortSignal,fetcher:Fetcher=fetch){
   const candidates=await listModels(key,provider,signal,fetcher);
   if(!candidates.length)throw new AIProviderError('No supported '+providerName(provider)+' text model is available for this key. Check project access or try the other provider.',400,'no_models');
-  let failure:AIProviderError|undefined;const attempts:{model:string;code:string}[]=[];
+  let failure:AIProviderError|undefined,quotaFailure:AIProviderError|undefined;const attempts:{model:string;code:string}[]=[];
   for(const model of candidates.slice(0,4)){
     try{await requestModel(key,provider,model,'Reply with OK only.',[{role:'user',text:'Connection check.'}],false,AbortSignal.any([signal,AbortSignal.timeout(9000)]),fetcher);return {connected:true,provider,model};}
-    catch(error){if(signal.aborted)throw error;failure=error instanceof AIProviderError?error:new AIProviderError('The model did not respond in time.',504,'timeout');attempts.push({model,code:failure.code});if(['invalid_key','access_denied'].includes(failure.code))throw failure;}
+    catch(error){if(signal.aborted)throw error;failure=error instanceof AIProviderError?error:new AIProviderError('The model did not respond in time.',504,'timeout');if(failure.code==='quota')quotaFailure=failure;attempts.push({model,code:failure.code});if(['invalid_key','access_denied'].includes(failure.code))throw failure;}
   }
+  failure=quotaFailure||failure;
   throw new AIProviderError((failure?.message||'No model responded.')+' Tried '+attempts.map(a=>a.model).join(', ')+'.',failure?.status||502,failure?.code);
 }
 export async function generateProvider(options:{key:string;provider:AIProvider;model:string;system:string;turns:Turn[];signal:AbortSignal},fetcher:Fetcher=fetch){
