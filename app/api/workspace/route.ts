@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const user = await identity();
   if (!user) return json({ error: 'Sign in to open your workspace.' }, 401);
-  try { return json(await loadWorkspace(user)); }
+  try { return json({ ...await loadWorkspace(user), workspaceId: user }); }
   catch { return json({ error: 'Your workspace could not be loaded. Please retry.' }, 503); }
 }
 export async function PUT(req: Request) {
