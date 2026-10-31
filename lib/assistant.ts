@@ -7,7 +7,7 @@ export const proposalSchema=z.discriminatedUnion('type',[
 ]);
 export const emailSchema=z.object({leadId:z.string().max(80),subject:z.string().min(1).max(200),body:z.string().min(1).max(10000)});
 export const assistantOutputSchema=z.object({reply:z.string().min(1).max(8000),proposal:proposalSchema.nullish().transform(value=>value||undefined),draft:emailSchema.nullish().transform(value=>value||undefined)});
-export const assistantMessageSchema=z.object({id:z.string().max(80),role:z.enum(['user','assistant']),text:z.string().max(8000),provider:z.string().max(80).optional(),draft:emailSchema.optional(),proposal:proposalSchema.optional(),actioned:z.boolean().optional(),error:z.boolean().optional(),retry:z.string().max(4000).optional()});
+export const assistantMessageSchema=z.object({id:z.string().max(80),role:z.enum(['user','assistant']),text:z.string().max(8000),provider:z.string().max(80).optional(),draft:emailSchema.optional(),proposal:proposalSchema.optional(),actioned:z.boolean().optional(),draftSaved:z.boolean().optional(),proposalApplied:z.boolean().optional(),error:z.boolean().optional(),retry:z.string().max(4000).optional()});
 export type AssistantMessage=z.infer<typeof assistantMessageSchema>;
 export type AssistantProposal=z.infer<typeof proposalSchema>;
 
