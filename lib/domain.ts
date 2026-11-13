@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { operationsSchema, sampleOperations, emptyOperations } from './operations.ts';
 export function newId(){return typeof globalThis.crypto?.randomUUID==='function'?globalThis.crypto.randomUUID():`record-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,12)}`;}
 export const STAGES = ['New', 'Contacted', 'Qualified', 'Viewing', 'Negotiation', 'Won', 'Lost'] as const;
 export const COLORS = ['#9281ee','#54a8e0','#b991e8','#e8ac64','#6db9a6','#66b394','#b6bbc9'];
@@ -9,7 +10,7 @@ export const taskSchema = z.object({id:text(80),leadId:text(80),title:text(200).
 export const draftSchema = z.object({id:text(80),leadId:text(80),subject:text(200),body:text(10000),status:z.enum(['Needs review','Approved','Archived','Marked sent']),createdAt:date,provider:text(80)});
 export const propertySchema = z.object({id:text(80),name:text(150).min(1),area:text(150),type:text(80),price:z.number().min(0).max(1e12),beds:z.number().min(0).max(100),baths:z.number().min(0).max(100),sqm:z.number().min(0).max(1e6),description:text(2000),theme:z.number().int().min(0).max(3)});
 export const activitySchema = z.object({id:text(80),leadId:text(80),text:text(500),at:text(40),kind:text(40)});
-export const workspaceSchema = z.object({leads:z.array(leadSchema).max(1000),tasks:z.array(taskSchema).max(2000),drafts:z.array(draftSchema).max(1000),properties:z.array(propertySchema).max(500),activities:z.array(activitySchema).max(1000),settings:z.object({workspaceName:text(80).trim().min(1).default('Workspace'),name:text(100),email:text(254),currency:z.enum(['PHP','USD','AUD','GBP']),dailyGoal:z.number().int().min(1).max(100),notifications:z.boolean(),notificationReads:z.array(text(600)).max(3000).default([])})});
+export const workspaceSchema = z.object({operations:operationsSchema.default(emptyOperations()),leads:z.array(leadSchema).max(1000),tasks:z.array(taskSchema).max(2000),drafts:z.array(draftSchema).max(1000),properties:z.array(propertySchema).max(500),activities:z.array(activitySchema).max(1000),settings:z.object({workspaceName:text(80).trim().min(1).default('Workspace'),name:text(100),email:text(254),currency:z.enum(['PHP','USD','AUD','GBP']),dailyGoal:z.number().int().min(1).max(100),notifications:z.boolean(),notificationReads:z.array(text(600)).max(3000).default([])})});
 export type Lead=z.infer<typeof leadSchema>;
 export type Task=z.infer<typeof taskSchema>;
 export type Draft=z.infer<typeof draftSchema>;
@@ -38,7 +39,7 @@ const leads:Lead[]=[
 {id:'L006',name:'Ethan Mendoza',email:'ethan.mendoza@example.com',phone:'000-000-0006',area:'Quezon City',type:'Condominium',budget:5500000,timeline:'Within 1–3 months',stage:'New',source:'Facebook',createdAt:day(-1),lastContact:'',followUp:day(1),notes:'Fictional lead. Interested in amenities and transport access.',tags:['New inquiry']},
 {id:'L007',name:'Sofia Ramos',email:'sofia.ramos@example.com',phone:'000-000-0007',area:'Pasig',type:'Condominium',budget:6000000,timeline:'Within 1–3 months',stage:'Won',source:'Referral',createdAt:day(-25),lastContact:day(-4),followUp:'',notes:'Fictional closed deal for portfolio demonstration.',tags:['Closed deal']},
 {id:'L008',name:'Adrian Tan',email:'adrian.tan@example.com',phone:'000-000-0008',area:'Manila',type:'Condominium',budget:2800000,timeline:'Still exploring',stage:'Lost',source:'Website',createdAt:day(-20),lastContact:day(-5),followUp:'',notes:'Fictional lead. Search paused by the buyer.',tags:['Paused search']}];
-return {leads,tasks:[
+return {operations:sampleOperations(),leads,tasks:[
 {id:'T001',leadId:'L001',title:'Share a tailored shortlist',due:day(-1),time:'09:00',done:false,kind:'Email'},
 {id:'T002',leadId:'L002',title:'Discuss commute preferences',due:day(),time:'10:30',done:false,kind:'Call'},
 {id:'T003',leadId:'L003',title:'Confirm the Manila viewing',due:day(),time:'14:00',done:false,kind:'Viewing'},
