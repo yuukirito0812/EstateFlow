@@ -56,9 +56,9 @@ export default function OperationsBoard({value,onChange,demo}:{value:Operations;
     if(('title' in item && !item.title.trim())||('name' in item && !item.name.trim())){setError('Please enter a name or title.');return;}
     if(('projectId' in item)&&(!item.projectId||!value.projects.some(p=>p.id===item.projectId))){setError('Choose a valid linked project.');return;}
     let next:Operations;
-    if(editing.kind==='project'){const found=value.projects.some(p=>p.id===item.id);next={...value,projects:found?value.projects.map(p=>p.id===item.id?item:p):[...value.projects,item]};}
-    else if(editing.kind==='contact'){const found=value.contacts.some(c=>c.id===item.id);next={...value,contacts:found?value.contacts.map(c=>c.id===item.id?item:c):[...value.contacts,item]};}
-    else{const found=value.tasks.some(t=>t.id===item.id);next={...value,tasks:found?value.tasks.map(t=>t.id===item.id?item:t):[...value.tasks,item]};}
+    if(editing.kind==='project'){const project=editing.item;const found=value.projects.some(p=>p.id===project.id);next={...value,projects:found?value.projects.map(p=>p.id===project.id?project:p):[...value.projects,project]};}
+    else if(editing.kind==='contact'){const contact=editing.item;const found=value.contacts.some(c=>c.id===contact.id);next={...value,contacts:found?value.contacts.map(c=>c.id===contact.id?contact:c):[...value.contacts,contact]};}
+    else{const task=editing.item;const found=value.tasks.some(t=>t.id===task.id);next={...value,tasks:found?value.tasks.map(t=>t.id===task.id?task:t):[...value.tasks,task]};}
     const check=operationsSchema.safeParse(next);
     if(!check.success){setError('Check the dates and field lengths.');return;}
     if(await commit(check.data)){setEditing(null);setError('');}
