@@ -1,5 +1,5 @@
 'use client';
-import { useMemo,useState } from 'react';
+import { useMemo,useState,type ReactNode } from 'react';
 import { Activity,AlertTriangle,ArrowUpRight,Check,CheckCircle2,ClipboardList,Download,FileSpreadsheet,Filter,Plus,Search,ShieldCheck,Trash2,Users,X } from 'lucide-react';
 import { day } from '@/lib/domain';
 import { contactHealth,contactStages,emptyOperations,operationsSchema,priorities,projectHealth,projectStatuses,qualityIssues,sampleOperations,taskHealth,taskStatuses,type Operations,type OpsProject,type OpsContact,type OpsTask } from '@/lib/operations';
@@ -161,4 +161,4 @@ export default function OperationsBoard({value,onChange,demo}:{value:Operations;
     <footer><button className="button secondary" onClick={()=>setEditing(null)}>Cancel</button><button className="button secondary ops-delete" disabled={busy} onClick={()=>void remove()}><Trash2 size={14}/>Delete</button><button className="button primary" disabled={busy} onClick={()=>void submit()}><Check size={15}/>{busy?'Saving…':'Save record'}</button></footer></div></div>}
   </div>;
 }
-function Field({label,children,wide=false}:{label:string;children:React.ReactNode;wide?:boolean}){return <label className={'ops-field'+(wide?' wide':'')}><span>{label}</span>{children}</label>;}
+function Field({label,children,wide=false}:{label:string;children:ReactNode;wide?:boolean}){return <label className={'ops-field'+(wide?' wide':'')}><span>{label}</span>{children}</label>;}
